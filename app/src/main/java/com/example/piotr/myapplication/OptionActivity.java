@@ -1,6 +1,9 @@
 package com.example.piotr.myapplication;
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -16,7 +19,6 @@ public class OptionActivity extends AppCompatActivity {
     DatabaseHelper db;
     Button buttonSAVE, buttonDISPLAY, buttonEDIT, buttonDELETE;
     EditText produkt, ilosc, cena, id;
-
 
 
     @Override
@@ -59,14 +61,23 @@ public class OptionActivity extends AppCompatActivity {
         buttonSAVE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean czysieudalo;
+                long productId = 0;
 
-                czysieudalo = db.wstawdane(produkt.getText().toString(), ilosc.getText().toString(), cena.getText().toString());
+                String product = produkt.getText().toString();
+                String quantity = ilosc.getText().toString();
+                String price = cena.getText().toString();
 
-                if (czysieudalo) {
+
+                productId = db.wstawdane(product, quantity, price);
+
+
+                if (productId != -1) {
                     Toast.makeText(OptionActivity.this, "Udało się", Toast.LENGTH_LONG).show();
-                } else
+                } else {
                     Toast.makeText(OptionActivity.this, "NIE udało się", Toast.LENGTH_LONG).show();
+                }
+
+                sendIntent(productId, product, quantity, price);
             }
         });
 
@@ -99,14 +110,25 @@ public class OptionActivity extends AppCompatActivity {
 
     }
 
-    public void Wyswietl(String tytul,String wiadomosc){
+    private void sendIntent(long productId, String product, String quantity, String price) {
+
+        final Intent intent = new Intent();
+        intent.setAction("com.example.piotr.myapplication.show.product");
+//        intent.addCategory("android.intent.category.DEFAULT");
+        intent.putExtra("PRODUCT_ID_KEY", productId);
+        intent.putExtra("PRODUCT_KEY", product);
+        intent.putExtra("QUANTITY_KEY", quantity);
+        intent.putExtra("PRICE_KEY", price);
+        intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+        sendBroadcast(intent);
+    }
+
+    public void Wyswietl(String tytul, String wiadomosc) {
         AlertDialog.Builder budowiczy = new AlertDialog.Builder(this);
         budowiczy.setCancelable(true);
         budowiczy.setMessage(wiadomosc);
         budowiczy.setTitle(tytul);
         budowiczy.show();
-
-
     }
 
 }

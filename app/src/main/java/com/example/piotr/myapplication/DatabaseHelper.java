@@ -30,19 +30,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public boolean wstawdane (String Produkt, String Ilosc, String Cena) {
+    public long wstawdane (String Produkt, String Ilosc, String Cena) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put ("Produkt", Produkt);
         cv.put ("ilosc", Ilosc);
         cv.put ("cena", Cena);
 
-        if (db.insert(database_table, null, cv) ==-1 ){
-            return false;
-
-        }else {
-            return true;
-        }
+        return db.insert(database_table, null, cv);
     }
 
 
